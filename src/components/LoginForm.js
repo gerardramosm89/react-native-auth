@@ -6,7 +6,14 @@ export default class LoginForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: ''
+      email: '',
+      password: ''
+    }
+    this.styles = {
+      inputStyle: {
+        height: 20,
+        width: 100
+      }
     }
   }
   render() {
@@ -14,15 +21,24 @@ export default class LoginForm extends Component {
       <View>
         <Card>
           <CardSection>
-            <TextInput
-            value={this.state.text}
-            onChangeText={text => {
-              this.setState({ text: text }, () => console.log(this.state.text));
-            }}
-            style={{ height: 20, width: 100 }} />
+            <Input
+              label={"Email"}
+              placeholder="user@domain.com"
+              value={this.state.email}
+              onChangeText={email => {
+                this.setState({ email }, () => console.log(this.state.email));
+              }}
+              style={this.styles.inputStyle}
+            />
           </CardSection>
           <CardSection>
-            <TextInput style={{ height: 20, width: 100 }} />
+            <Input
+            label={"Password"}
+            value={this.state.password}
+            onChangeText={password => {
+              this.setState({ password }, () => console.log(this.state.password));
+            }}
+            />
           </CardSection>
           <CardSection>
             <Button>
