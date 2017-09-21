@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import firebase from 'firebase';
 import Header from './components/common/Header';
 import LoginForm from './components/LoginForm';
-
+import { Button } from './components/common';
 
 class App extends Component {
   state = {
@@ -20,6 +20,7 @@ class App extends Component {
     });
 
     firebase.auth().onAuthStateChanged((user) => {
+      console.log('auth state changing');
       if (user) {
         this.setState({ loggedIn: true })
       } else {
@@ -28,11 +29,23 @@ class App extends Component {
     });
   }
 
+  renderContent() {
+    if (this.state.loggedIn) {
+      return(
+        <Button>
+          Log Out
+        </Button>
+      );
+    } else {
+      return <LoginForm />
+    }
+  }
+
   render() {
     return (
       <View>
         <Header headerText='Auth!' />
-        <LoginForm />
+        {this.renderContent()}
       </View>
     );
   }
