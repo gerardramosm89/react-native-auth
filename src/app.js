@@ -3,11 +3,11 @@ import { View, Text } from 'react-native';
 import firebase from 'firebase';
 import Header from './components/common/Header';
 import LoginForm from './components/LoginForm';
-import { Button } from './components/common';
+import { Button, Spinner } from './components/common';
 
 class App extends Component {
   state = {
-    loggedIn: false
+    loggedIn: null
   }
   componentWillMount() {
     firebase.initializeApp({
@@ -22,22 +22,21 @@ class App extends Component {
     firebase.auth().onAuthStateChanged((user) => {
       console.log('auth state changing');
       if (user) {
-        this.setState({ loggedIn: true })
+        this.setState({ loggedIn: true });
       } else {
-        this.setState({ loggedIn: false })
+        this.setState({ loggedIn: false });
       }
     });
   }
 
   renderContent() {
-    if (this.state.loggedIn) {
-      return(
-        <Button>
-          Log Out
-        </Button>
-      );
-    } else {
-      return <LoginForm />
+    switch(this.state.loggedIn) {
+      case true:
+        return <Button onPress={() => firebase.auth().signOut()}>Log Out</Button>;
+      case false:
+        return <LoginForm />;
+      default:
+        return <Spinner size="large" />;
     }
   }
 
