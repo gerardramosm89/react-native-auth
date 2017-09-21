@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { Button, Card, CardSection, Input } from './common';
+import { Button, Card, CardSection, Input, Spinner } from './common';
 import firebase from 'firebase';
 
 export default class LoginForm extends Component {
@@ -9,7 +9,8 @@ export default class LoginForm extends Component {
     this.state = {
       email: '',
       password: '',
-      error: ''
+      error: '',
+      loading: false
     }
     this.styles = {
       inputStyle: {
@@ -23,16 +24,41 @@ export default class LoginForm extends Component {
       }
     }
   }
+  onLoginSuccess() {
+    this.setState({ 
+      email: '',
+      password: '',
+      loading: false,
+      error: ''
+    });
+  }
+  onLoginFail() {
+    this.setState({
+      loading: false,
+      error: `Authentication failed.`
+    })
+  }
   onButtonPress() {
     const { email, password } = this.state;
-    this.setState({ error: '' })
+    this.setState({ error: '', loading: true });
     firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(this.onLoginSuccess.bind(this))
       .catch(() => {
         firebase.auth().createUserWithEmailAndPassword(email, password)
-          .catch((err) => {
-            this.setState({ error: `Authentication failed ${err}` })
-          });
+          .then(this.onLoginSuccess.bind(this))
+          .catch(this.onLoginFail.bind(this));
       });
+  }
+  renderButton() {
+    if (this.state.loading) {
+      return <Spinner size={'small'} />;
+    } else {
+      return (
+        <Button onPress={this.onButtonPress.bind(this)}>
+          Log in
+        </Button>
+      );
+    }
   }
   render() {
     return (
@@ -64,9 +90,7 @@ export default class LoginForm extends Component {
             {this.state.error}
           </Text>
           <CardSection>
-            <Button onPress={this.onButtonPress.bind(this)}>
-              Log in
-            </Button>
+            {this.renderButton()}
           </CardSection>
         </Card>
       </View>
